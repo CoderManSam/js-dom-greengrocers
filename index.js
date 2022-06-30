@@ -103,10 +103,15 @@ function createStoreItem(itemName, itemImage) {
   const storeItemButton = document.createElement('button')
   storeItemButton.className = "store-item-button"
   storeItemButton.innerText = "Add to cart"
+  storeItemButton.addEventListener('click', function (event){
+    event.preventDefault()
+
+    setCart(storeItemImg.alt, storeItemImg.src)
+    
+  })  
   storeItem.append(storeItemButton)
 
   storeItemList.append(storeItem)
-
 }
 
 
@@ -126,20 +131,24 @@ function setCart(itemName, itemImage) {
 
   stateCart.push(cartItem)
 
+  // console.log("cart has", state.cart)
+
   renderCart()
 }
+
 
 function renderCart() {
 
   cartItemList.innerHTML = ''
 
-  state.cart.forEach(
+  state.cart.forEach(item => 
     
-    itemName, itemImage => createCartItem(itemName, itemImage)
+    createCartItem(item.name, item.image)
 
   )
 
 }
+
 
 function createCartItem(itemName, itemImage) {
 
@@ -170,24 +179,25 @@ function createCartItem(itemName, itemImage) {
   cartItemPlusButton.innerText = "+"
   cartItem.append(cartItemPlusButton)
 
-  cartItemList.appendChild(li)
-
+  cartItemList.appendChild(cartItem)
 }
 
-function addToCart() {
 
-  const storeItemButton = document.body.querySelector('.store-item-button')
-  const storeItemImg = document.body.querySelector('.store-item-img')
+// function addToCart() {
 
-  storeItemButton.addEventListener('click', function(event){
+//   const storeItemButton = document.body.querySelector('.store-item-button')
+//   const storeItemImg = document.body.querySelector('.store-item-img')
 
-    event.preventDefault()
+//   storeItemButton.addEventListener('click', function (event){
+//     event.preventDefault()
 
-    setCart(storeItemImg.alt, storeItemImg.src)
-  })
+//     // const eventImg = event.target.previousElementSibling.firstChild
 
-}
+//     setCart(storeItemImg.alt, storeItemImg.src)
+//   })
+
+// }
 
 
 createAllStoreItems()
-addToCart()
+renderCart()
