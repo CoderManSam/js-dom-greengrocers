@@ -58,6 +58,7 @@ const storeItemList = document.body.querySelector('.store--item-list')
 const cartItemList = document.body.querySelector('.cart--item-list')
 const stateItems = state.items
 const stateCart = state.cart
+const cartTotal = document.body.querySelector('.total-number')
 const assetIcons = [
   "assets/icons/001-beetroot.svg",
   "assets/icons/002-carrot.svg",
@@ -118,7 +119,17 @@ function createStoreItem(itemName, itemImage) {
 // Adding items to the cart
 function setCart(itemName, itemImage) {
 
-  const itemPrice = (state.items.find((element) => element.name === itemName)).price
+  const findCartItem = (stateCart.find((element) => element.name === itemName))
+
+  console.log("cart item", findCartItem)
+
+  if(findCartItem) {
+
+    findCartItem.quantity++
+
+  }
+
+  else {const itemPrice = (stateItems.find((element) => element.name === itemName)).price
 
   const cartItem = {
 
@@ -129,9 +140,9 @@ function setCart(itemName, itemImage) {
 
   }
 
-  stateCart.push(cartItem)
+  stateCart.push(cartItem)}
 
-  // console.log("cart has", state.cart)
+  console.log("cart has", state.cart)
 
   renderCart()
 }
@@ -141,63 +152,96 @@ function renderCart() {
 
   cartItemList.innerHTML = ''
 
-  state.cart.forEach(item => 
+  stateCart.forEach(item => 
     
-    createCartItem(item.name, item.image)
+    createCartItem(item.name, item.image, item.quantity)
+
+
 
   )
 
 }
 
 
-function createCartItem(itemName, itemImage) {
+function createCartItem(itemName, itemImage, itemQuantity) {
 
-  const cartItem = document.createElement('li')
+  const findCartItem = (stateCart.find((element) => element.name === itemName))
 
-  const cartItemImg = document.createElement('img')
-  cartItemImg.className = "cart--item-icon"
-  cartItemImg.src = itemImage
-  cartItemImg.alt = itemName
-  cartItem.append(cartItemImg)
+    const cartItem = document.createElement('li')
 
-  const cartItemName = document.createElement('p')
-  cartItemName.innerText = itemName
-  cartItem.append(cartItemName)
+    const cartItemImg = document.createElement('img')
+    cartItemImg.className = "cart--item-icon"
+    cartItemImg.src = itemImage
+    cartItemImg.alt = itemName
+    cartItem.append(cartItemImg)
 
-  const cartItemMinusButton = document.createElement('button')
-  cartItemMinusButton.className = "quantity-btn remove-btn center"
-  cartItemMinusButton.innerText = "-"
-  cartItem.append(cartItemMinusButton)
+    const cartItemName = document.createElement('p')
+    cartItemName.innerText = itemName
+    cartItem.append(cartItemName)
 
-  const cartItemSpan = document.createElement('span')
-  cartItemSpan.className = "quantity-text center"
-  cartItemSpan.innerText = "1"
-  cartItem.append(cartItemSpan)
+    const cartItemMinusButton = document.createElement('button')
+    cartItemMinusButton.className = "quantity-btn remove-btn center"
+    cartItemMinusButton.innerText = "-"
+    cartItemMinusButton.addEventListener('click', function (event){
+      event.preventDefault()
 
-  const cartItemPlusButton = document.createElement('button')
-  cartItemPlusButton.className = "quantity-btn add-btn center"
-  cartItemPlusButton.innerText = "+"
-  cartItem.append(cartItemPlusButton)
+      findCartItem.quantity--
 
-  cartItemList.appendChild(cartItem)
-}
+      if(findCartItem.quantity <= 0) {
 
+        const cartItemIndex = stateCart.findIndex((element) => element.name === itemName)
 
-// function addToCart() {
+        state.cart.splice(cartItemIndex, 1)
+    
+        console.log("cart state", state.cart)
+        
+        renderCart()
+      }
+      
+      renderCart()
+    })  
+    cartItem.append(cartItemMinusButton)
 
-//   const storeItemButton = document.body.querySelector('.store-item-button')
-//   const storeItemImg = document.body.querySelector('.store-item-img')
+    const cartItemSpan = document.createElement('span')
+    cartItemSpan.className = "quantity-text center"
+    cartItemSpan.innerText = `${itemQuantity}`
+    cartItem.append(cartItemSpan)
 
-//   storeItemButton.addEventListener('click', function (event){
-//     event.preventDefault()
+    const cartItemPlusButton = document.createElement('button')
+    cartItemPlusButton.className = "quantity-btn add-btn center"
+    cartItemPlusButton.innerText = "+"
+    cartItemPlusButton.addEventListener('click', function (event){
+      event.preventDefault()
 
-//     // const eventImg = event.target.previousElementSibling.firstChild
+      findCartItem.quantity++
+      
+      renderCart()
+    })  
+    cartItem.append(cartItemPlusButton)
 
-//     setCart(storeItemImg.alt, storeItemImg.src)
-//   })
+    cartItemList.appendChild(cartItem)
+  }  
 
-// }
+  function cartSum () { 
 
+    let sum = 0
+
+    stateCart.forEach(item => 
+      
+      sum += item.quantity*item.price
+      
+    )
+
+    return sum
+  } 
+
+  addEventListener('click', function (event){
+    event.preventDefault()
+
+    cartTotal.innerText = "£" + `${cartSum()}`
+    
+    renderCart()
+  })  
 
 createAllStoreItems()
 renderCart()
